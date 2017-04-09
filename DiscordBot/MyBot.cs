@@ -2,6 +2,7 @@
 using Discord.Commands;
 
 using DiscordBot.random;
+using DiscordBot.Instructions;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -35,7 +36,6 @@ namespace DiscordBot
                 input.AllowMentionPrefix = true;
             });
 
-            
             commands = client.GetService<CommandService>();
             /* init */
 
@@ -69,24 +69,11 @@ namespace DiscordBot
              */
 
             /*
-             * 
-             */
-            client.ChannelCreated += (sender, e) =>
-            {
-                // Lets send a message when a new channel gets created!
-                if (e.Channel.Type == ChannelType.Text && !e.Channel.IsPrivate)
-                    e.Channel.SendMessage("一個新頻道已經建立，說點話吧!!");
-            };
-            /*
-             * 
-             */
-
-            /*
              * Add feature 
              */
             UserInfo();
             Draw.DrawCardCommand();
-                ;
+            Instrucions.SetInstrucions();
                 ;
                 ;
             /*

@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Instructions\Instrucions.cs" />
     <Compile Include="random\Draw.cs" />
     <Compile Include="MyBot.cs" />
     <Compile Include="Program.cs" />
