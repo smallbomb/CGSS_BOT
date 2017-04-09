@@ -64,6 +64,18 @@ namespace DiscordBot
              *  End Default info
              */
 
+            /*
+             * 
+             */
+            client.ChannelCreated += (sender, e) =>
+            {
+                // Lets send a message when a new channel gets created!
+                if (e.Channel.Type == ChannelType.Text && !e.Channel.IsPrivate)
+                    e.Channel.SendMessage("一個新頻道已經建立，說點話吧!!");
+            };
+            /*
+             * 
+             */
 
             /*
              * Add feature 
