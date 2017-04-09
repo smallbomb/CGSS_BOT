@@ -21,7 +21,6 @@ namespace DiscordBot
 
         public MyBot()
         {
-
             /* init */
             client = new DiscordClient(x =>
             {
@@ -83,6 +82,16 @@ namespace DiscordBot
              * Discord bot login.
              * Need to put last line.
              */
+            // Get Bot Token
+            if (!File.Exists("token.txt"))
+            {
+                // Token File Not Exists
+                Console.WriteLine("Please create a file called 'token.txt' and paste your token in it!");
+                Console.WriteLine("\nPress any key to exit...");
+                Console.ReadKey();
+                Environment.Exit(0);
+            }
+            discordbotToken = File.ReadAllText("token.txt");
             client.ExecuteAndWait(async () =>
             {
                 /* discordBot Token */
@@ -124,7 +133,6 @@ namespace DiscordBot
         private void Log(object sender, LogMessageEventArgs e)
         {
             Console.WriteLine(e.Message);
-
         }
 
     }
