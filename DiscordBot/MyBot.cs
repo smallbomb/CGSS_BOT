@@ -27,7 +27,7 @@ namespace DiscordBot
             {
                 x.LogLevel = LogSeverity.Info;
                 x.LogHandler = Log;
-
+                
             });
            
             client.UsingCommands(input =>
@@ -36,6 +36,7 @@ namespace DiscordBot
                 input.AllowMentionPrefix = true;
             });
 
+            
             commands = client.GetService<CommandService>();
             /* init */
 
@@ -44,17 +45,20 @@ namespace DiscordBot
              */
             commands.CreateCommand("hello").Do(async (e) =>
                 {
+                    
                     await e.Channel.SendMessage("Hi! " + e.User.NicknameMention );
+                    
                 });
 
             commands.CreateCommand("help").Do(async (e) =>
                 {
-                    string help_infomation = "現在指令有\n";
-                    help_infomation += "!draw       : 10連抽卡\n";
+                    string help_information = "```";
+                    help_information += "現在指令有\n";
+                    help_information += "!draw       : 10連抽卡\n";
+                    help_information += "\n\n而每個指令如\n!draw -help\n則有該指令的詳細說明\n"; // 暫定需要做到的功能
+                    help_information += "```";
 
-
-                    help_infomation += "\n\n而每個指令如\n!draw -help\n則有該指令的詳細說明\n"; // 暫定需要做到的功能
-                    await e.Channel.SendMessage(help_infomation);
+                    await e.Channel.SendMessage(help_information);
                 });
             commands.CreateCommand("千川ちひろ").Do(async (e) =>
             {
@@ -93,7 +97,10 @@ namespace DiscordBot
                 }
                     
                 await client.Connect( discordbotToken, TokenType.Bot);
+                client.SetGame(new Game("デレステ!"));
             });
+
+            
         }
 
         private void UserInfo()

@@ -1,4 +1,5 @@
-﻿
+﻿using Discord.Commands;
+
 using System.Drawing;
 using System;
 using System.Collections.Generic;
@@ -21,12 +22,41 @@ namespace DiscordBot.random
             string dir_SSR = "SSR/";
             string dir_SR = "SR/";
             string dir_R = "R/";
+            string version = "version.txt";
 
-
-            commands.CreateCommand("draw").Do(async (e) =>
+            commands.CreateCommand("draw").Parameter("message", ParameterType.Multiple).Do(async (e) =>
             {
-                //Console.WriteLine("e.User.NicknameMention: " + e.User.NicknameMention);
-                await e.Channel.SendMessage(e.User.NicknameMention);
+
+                if ( e.Args.Length == 0 )
+                {
+                    ; //正常執行10連
+                }
+                else if ( e.Args[0].ToLower().Equals("-v") )
+                {
+                    if (!File.Exists(imagedir + version))
+                        Console.WriteLine("!drew File open error");
+                    else 
+                        await e.Channel.SendMessage( "```" + File.ReadAllText( imagedir+version ) + "```" );
+                    return;
+                }
+                else if ( e.Args[0].ToLower().Equals("-help") )
+                {
+                    string help_information = "```";
+                    help_information += "此為!draw參數說明\n";
+                    help_information += "-v      :可以看現在更新的卡池日期\n";
+                    help_information += "```";
+                    await e.Channel.SendMessage(help_information);
+                    return;
+                }
+                else
+                {
+                    await e.Channel.SendMessage("```請打 \"!draw -help\" 看那些參數可使用\n```");
+                    return;
+                }
+
+
+                    //Console.WriteLine("e.User.NicknameMention: " + e.User.NicknameMention);
+                    await e.Channel.SendMessage(e.User.NicknameMention);
                 Image mergePic = null;
                 int countSSR = 0, countSR = 0;
 
