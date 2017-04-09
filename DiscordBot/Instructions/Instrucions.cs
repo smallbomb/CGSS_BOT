@@ -1,36 +1,45 @@
 ﻿using Discord;
 using System;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace DiscordBot.Instructions
 {
     public class Instrucions : MyBot
     {
+        // 說明指令Json檔案
+        public static string jsonHelper = "../../Instructions/Instructions_Helper.json";
+        // BOT回答答案
         public static string[] BotAnswer = { "Yes", "Maybe", "No"};
         // 隨機種子產生器
         public static Random random = new Random(Guid.NewGuid().GetHashCode());
         // ========================== 說明指令集 ===============================
         public static void ResponseMessage_Helper(string messages, MessageEventArgs e)
         {
+            string jsonString = "";
+            try { jsonString = File.ReadAllText(jsonHelper); } catch { }
+            JObject jsonObject = JObject.Parse(jsonString);
+
             switch (messages)
             {
-                case "!Agr_Hello":
+                case "!Agr_hello":
                     {
-                        e.Message.Channel.SendMessage("```\nHello World.\nThis is a debug arg.\n```");
+                        e.Message.Channel.SendMessage(jsonObject.GetValue("Agr_hello").ToString());
                     }
                     break;
                 case "!Agr_卯月":
                     {
-                        e.Message.Channel.SendMessage("```\nShow Uzuki QQ Picture.\nThis is a debug arg.\n```");
+                        e.Message.Channel.SendMessage(jsonObject.GetValue("Agr_卯月").ToString());
                     }
                     break;
                 case "!Agr_gatya":
                     {
-                        e.Message.Channel.SendMessage("```\nRandom Pick Number(s)\nFor Range 0 ~ 100, Maxium pick is 10.\nUsage: !Agr_gatya 10\n```");
+                        e.Message.Channel.SendMessage(jsonObject.GetValue("Agr_gatya").ToString());
                     }
                     break;
                 case "!Agr_ask":
                     {
-                        e.Message.Channel.SendMessage("```\nRandom Answer The Question.\nUsage: !Agr_ask Qes1\n```");
+                        e.Message.Channel.SendMessage(jsonObject.GetValue("Agr_ask").ToString());
                     }
                     break;
             }
@@ -43,12 +52,12 @@ namespace DiscordBot.Instructions
             {
                 case "!Agr_Hello":
                     {
-                        e.Message.Channel.SendMessage("`World!`");
+                        e.Message.Channel.SendMessage("```World!```");
                     }
                     break;
                 case "!Agr_卯月":
                     {
-                        e.Message.Channel.SendFile("`../../envelope/QQ.jpg`");
+                        e.Message.Channel.SendFile("../../envelope/QQ.jpg");
                     }
                     break;
                 default:
@@ -125,14 +134,7 @@ namespace DiscordBot.Instructions
         // ========================= 其餘功能放置處 ============================
         public static void OtherFeatures()
         {
-            // 建立新文字頻道的預設訊息
-            client.ChannelCreated += (sender, e) =>
-            {
-                if (e.Channel.Type == ChannelType.Text && !e.Channel.IsPrivate)
-                {
-                    e.Channel.SendMessage("`一個新頻道已經建立，說點話吧!!`");
-                }
-            };
+
         }
         // =====================================================================
         // ============================ 建構式 =================================
