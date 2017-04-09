@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DiscordBot.random
 {
@@ -22,7 +24,10 @@ namespace DiscordBot.random
             string dir_SSR = "SSR/";
             string dir_SR = "SR/";
             string dir_R = "R/";
-            string version = "version.txt";
+            string version = "version.json";
+            string jsonstr = "";
+
+            
 
             commands.CreateCommand("draw").Parameter("message", ParameterType.Multiple).Do(async (e) =>
             {
@@ -33,10 +38,20 @@ namespace DiscordBot.random
                 }
                 else if ( e.Args[0].ToLower().Equals("-v") )
                 {
+                    try { jsonstr = File.ReadAllText(imagedir + version); } catch { }
+                    JObject jsonobj = JObject.Parse(jsonstr);
+                    jsonobj.GetValue("cardpoolname");
+                    jsonobj.GetValue("date");
+                    string versionmessage = "卡池名稱:\n    "+ jsonobj.GetValue("cardpoolname") + "\n\n";
+                    versionmessage += "日期:\n    "+ jsonobj.GetValue("date") + "\n\n";
+                    versionmessage += "機率:" + "\nSSR " + jsonobj.GetValue("SSRProb").ToString().PadLeft(8) + "\nSR  " + jsonobj.GetValue("SRProb").ToString().PadLeft(8) + "\nR   " + jsonobj.GetValue("RProb").ToString().PadLeft(8) + "\n";
+                    
+
+
                     if (!File.Exists(imagedir + version))
                         Console.WriteLine("!drew File open error");
                     else 
-                        await e.Channel.SendMessage( "```" + File.ReadAllText( imagedir+version ) + "```" );
+                        await e.Channel.SendMessage( "```" + versionmessage + "```" );
                     return;
                 }
                 else if ( e.Args[0].ToLower().Equals("-help") )
@@ -158,6 +173,23 @@ namespace DiscordBot.random
 
             });
         }
+
+
+
+        private class VersionModel
+        {
+            
+            public string date { get; set; } = "2017/04/09";
+            public string cardpoolname { get; set; } = "abcd";
+            public string SSRProb { get; set; } = "1.5%";
+            public string RProb { get; set; } = "88.5%";
+            public string SRProb { get; set; } = "10%";
+
+        }
+
+
+
+
 
         private static Image VerticalMergeImages(Image img1, Image img2)
         {
