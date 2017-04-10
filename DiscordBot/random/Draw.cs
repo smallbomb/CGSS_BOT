@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Drawing.Imaging;
 
 namespace DiscordBot.random
 {
@@ -69,10 +70,10 @@ namespace DiscordBot.random
                     return;
                 }
 
+                await e.Channel.SendMessage(e.User.NicknameMention);
 
-                    //Console.WriteLine("e.User.NicknameMention: " + e.User.NicknameMention);
-                    await e.Channel.SendMessage(e.User.NicknameMention);
                 Image mergePic = null;
+                Image temp_mergePic = null;
                 int countSSR = 0, countSR = 0;
 
                 for (int i = 0; i < 10; i++)
@@ -132,8 +133,7 @@ namespace DiscordBot.random
                     }
                     else if ( i == 5 )
                     {
-                        mergePic.Save(imagedir + "merge.jpg");
-                        mergePic.Dispose();
+                        temp_mergePic = mergePic;
                         mergePic = Image.FromFile(card);
                     }
                     else if (i >= 1)
@@ -142,52 +142,36 @@ namespace DiscordBot.random
                         mergePic = HorizontalMergeImages(mergePic, tempPic);
                         tempPic.Dispose();
                     }
-
-
-                    // await e.Channel.SendFile( card );
-
                 }
-
-                
-                Image merge1 = Image.FromFile(imagedir + "merge.jpg");
-                mergePic = VerticalMergeImages(merge1, mergePic); // mergePic 是後來抽到的5~10張
-
-                merge1.Dispose();
-                mergePic.Save(imagedir + "merge.jpg");
-                mergePic.Dispose();
+                mergePic = VerticalMergeImages(temp_mergePic, mergePic); // mergePic 是後來抽到的5~10張
 
                 if (countSSR >= 1)
                 {
-                    await e.Channel.SendFile(imagedir + "merge.jpg");
+                    await e.Channel.SendFile(imagedir + "merge.Png", ToStream( mergePic , ImageFormat.Png));
                     await e.Channel.SendMessage(":fire::fire::fire::fire::fire::fire::fire::fire::fire:");
                 }
                 else if (countSR >= 2)
                 {
-                    await e.Channel.SendFile(imagedir + "merge.jpg");
+                    await e.Channel.SendFile(imagedir + "merge.Png", ToStream(mergePic, ImageFormat.Png));
                     await e.Channel.SendMessage(":see_no_evil::see_no_evil:");
                 }
                 else
                 {
                     await e.Channel.SendFile(imagedir + "QQ.jpg");
                 }
-
+                
+                mergePic.Dispose();
+                temp_mergePic.Dispose();
             });
         }
 
-
-
-        private class VersionModel
+        private static Stream ToStream( Image image, ImageFormat format)
         {
-            
-            public string date { get; set; } = "2017/04/09";
-            public string cardpoolname { get; set; } = "abcd";
-            public string SSRProb { get; set; } = "1.5%";
-            public string RProb { get; set; } = "88.5%";
-            public string SRProb { get; set; } = "10%";
-
+            var stream = new System.IO.MemoryStream();
+            image.Save(stream, format);
+            stream.Position = 0;
+            return stream;
         }
-
-
 
 
 
