@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json.Linq;
 
 namespace DiscordBot
 {
@@ -16,7 +16,7 @@ namespace DiscordBot
     {
         public static DiscordClient client { get; private set; }
         public static CommandService commands { get; private set; }
-        string discordbotToken = "";
+        
 
 
         public MyBot()
@@ -86,27 +86,26 @@ namespace DiscordBot
              * Discord bot login.
              * Need to put last line.
              */
-            // Get Bot Token
-            if (!File.Exists("token.txt"))
-            {
-                // Token File Not Exists
-                Console.WriteLine("Please create a file called 'token.txt' and paste your token in it!");
-                Console.WriteLine("\nPress any key to exit...");
-                Console.ReadKey();
-                Environment.Exit(0);
-            }
-            discordbotToken = File.ReadAllText("token.txt");
             client.ExecuteAndWait(async () =>
             {
+                // Get discordBot Token for json
+                string jsonstr = "";
+                try { jsonstr = File.ReadAllText("../../../Certificate.json"); } catch{ }
+
+                JObject jsonobj = JObject.Parse(jsonstr);
+				string discordbotToken = jsonobj.GetValue("token").ToString();
+				
                 /* discordBot Token */
                 if ( discordbotToken == "" )
                 {
-                    Console.WriteLine("Please add your discordbot key");
+                    Console.WriteLine("Please check your token from \"Certificate.json\" file");
                     Console.WriteLine("URL : https://discordapp.com/developers/applications/me");
+					Console.ReadLine(); //Pause
+					return ;
                 }
                     
                 await client.Connect( discordbotToken, TokenType.Bot);
-                client.SetGame(new Game("デレステ!"));
+                client.SetGame(new Game( jsonobj.GetValue("game").ToString() ));
             });
 
             
