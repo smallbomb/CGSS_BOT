@@ -1,5 +1,6 @@
 ﻿using Discord;
 using System;
+using DiscordBot.AgrGetya;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
@@ -39,6 +40,12 @@ namespace DiscordBot.Instructions
                         e.Channel.SendFile("../../envelope/QQ.jpg");
                     }
                     break;
+                case "!Agr_gatya":
+                    {
+                        e.Channel.SendMessage(e.User.NicknameMention);
+                        CGGetya.CGGetyaCommand(e);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -55,19 +62,6 @@ namespace DiscordBot.Instructions
             }
             switch (messages)
             {
-                case "!Agr_gatya":
-                    {
-                        if (Convert.ToInt32(param) > 11) return;
-                        int randNum = 0;
-                        string output = "";
-                        for (int i = 0; i < Convert.ToInt32(param); i++)
-                        {
-                            randNum = random.Next(100);
-                            output += randNum.ToString() + " ";
-                        }
-                        e.Channel.SendMessage("```" + output + "```");
-                    }
-                    break;
                 case "!Agr_ask":
                     {
                         string output =
@@ -75,6 +69,11 @@ namespace DiscordBot.Instructions
                             param + " ?\nAnswer Is : " +
                             BotAnswer[random.Next(BotAnswerCount)];
                         e.Channel.SendMessage("```" + output + "```");
+                    }
+                    break;
+                case "!Agr_cgid":
+                    {
+                        e.Channel.SendMessage("https://deresute.me/" + param + "/large");
                     }
                     break;
                 default:

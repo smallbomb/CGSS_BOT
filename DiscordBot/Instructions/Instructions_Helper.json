@@ -1,6 +1,7 @@
 {
   "!Agr_hello": "```\nHello World.\nThis is a debug arg.\n```",
   "!Agr_卯月": "```\nShow Uzuki QQ Picture.\nThis is a debug arg.\n```",
-  "!Agr_gatya": "```\nRandom Pick Number(s)\nFor Range 0 ~ 100, Maxium pick is 10.\nUsage: !Agr_gatya 10\n```",
-  "!Agr_ask": "```\nRandom Answer The Question.\nUsage: !Agr_ask Qes1\n```"
+  "!Agr_gatya": "```\nRandom Pick 10 Cards\nUsage: !Agr_gatya\n```",
+  "!Agr_ask": "```\nRandom Answer The Question.\nUsage: !Agr_ask Qes1\n```",
+  "!Agr_cgid": "```\nShow the CGSS Player ID Picture\nUsage: !Agr_ask [ID]\n```"
 }
