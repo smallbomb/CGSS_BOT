@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Certificate.json" />
     <None Include="data\images\envelope\version.json" />
     <None Include="packages.config" />
   </ItemGroup>

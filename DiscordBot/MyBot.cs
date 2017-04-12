@@ -88,14 +88,19 @@ namespace DiscordBot
              */
             client.ExecuteAndWait(async () =>
             {
-                // Get discordBot Token for json
+                // Get discordBot Token from json
                 string jsonstr = "";
-                try { jsonstr = File.ReadAllText("../../../Certificate.json"); } catch{ }
+                try { jsonstr = File.ReadAllText("../../../Certificate.json"); }
+                catch
+                {
+                    Console.WriteLine("ERROR: 沒有找到" + "Certificate.json");
+                    Console.ReadLine();
+                    return;
+                }
 
+                /* discordBot Token */
                 JObject jsonobj = JObject.Parse(jsonstr);
 				string discordbotToken = jsonobj.GetValue("token").ToString();
-				
-                /* discordBot Token */
                 if ( discordbotToken == "" )
                 {
                     Console.WriteLine("Please check your token from \"Certificate.json\" file");
