@@ -92,7 +92,7 @@ namespace DiscordBot.random
 					if (countSSR >= 1)
 					{
                         await e.Channel.SendFile(imagedir + "merge.Png", ToStream(mergePic, ImageFormat.Png));
-                        await e.Channel.SendMessage(":fire::fire::fire:");
+                        await e.Channel.SendMessage(":fire::fire::fire::fire::fire::fire::fire::fire::fire::fire::fire::fire:");
                     }
 					else if (countSR >= 2)
 					{

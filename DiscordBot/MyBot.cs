@@ -35,7 +35,7 @@ namespace DiscordBot
                 input.AllowMentionPrefix = true;
             });
 
-            
+
             commands = client.GetService<CommandService>();
             /* init */
 
@@ -45,15 +45,17 @@ namespace DiscordBot
             commands.CreateCommand("hello").Do(async (e) =>
                 {
                     
-                    await e.Channel.SendMessage("Hi! " + e.User.NicknameMention );
-                    
+                    await e.Channel.SendMessage("こんにちは　" + e.User.NicknameMention );
+
+
                 });
 
             commands.CreateCommand("help").Do(async (e) =>
                 {
                     string help_information = "```";
                     help_information += "現在指令有\n";
-                    help_information += "!draw       : 10連抽卡\n";
+                    help_information += "!draw       : 抽卡\n";
+                    help_information += "!lots       : 求籤\n";
                     help_information += "\n\n而每個指令如\n!draw -help\n則有該指令的詳細說明\n"; // 暫定需要做到的功能
                     help_information += "```";
 
@@ -74,7 +76,7 @@ namespace DiscordBot
              */
             UserInfo();
             Draw.DrawCardCommand();
-                ;
+            Lots.DrawLotsCommand() ;
                 ;
                 ;
             /*
