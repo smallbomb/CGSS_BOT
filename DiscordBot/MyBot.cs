@@ -55,6 +55,8 @@ namespace DiscordBot
                     help_information += "現在指令有\n";
                     help_information += "!draw       : 抽卡\n";
                     help_information += "!lots       : 求籤\n";
+                    help_information += "!Agr_cgid   : 名片功能\n";
+                    help_information += "!Agr_ask    : 跟8ball一樣\n";
                     help_information += "\n\n而每個指令如\n!draw -help\n則有該指令的詳細說明\n"; // 暫定需要做到的功能
                     help_information += "```";
 
@@ -62,7 +64,7 @@ namespace DiscordBot
                 });
             commands.CreateCommand("千川ちひろ").Do(async (e) =>
             {
-                await e.Channel.SendMessage("My boss is rockon590");
+                await e.Channel.SendMessage("rockon590が大好き^_^");
             });
 
             /*

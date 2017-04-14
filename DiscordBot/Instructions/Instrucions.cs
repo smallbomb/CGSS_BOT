@@ -1,6 +1,6 @@
 ﻿using Discord;
 using System;
-using DiscordBot.AgrGetya;
+
 using System.IO;
 using Newtonsoft.Json.Linq;
 
@@ -42,8 +42,8 @@ namespace DiscordBot.Instructions
                     break;
                 case "!Agr_gatya":
                     {
-                        e.Channel.SendMessage(e.User.NicknameMention);
-                        CGGetya.CGGetyaCommand(e);
+                        //e.Channel.SendMessage(e.User.NicknameMention); 功能一樣 沒必要放
+                        //CGGetya.CGGetyaCommand(e); 功能一樣 沒必要放
                     }
                     break;
                 default:
