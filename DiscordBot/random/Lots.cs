@@ -44,9 +44,10 @@ namespace DiscordBot.random
                 else if (lotsNumber >= 84 && lotsNumber <= 100)
                     lots = "84.png";
 
-                await e.Channel.SendFile( imagedir + lots );
-                await e.Channel.SendMessage(ask);
 
+                await e.Channel.SendMessage(e.User.Mention + "想問: \"" + ask + "\"");
+                await e.Channel.SendFile( imagedir + lots );
+                
 
             });
 
