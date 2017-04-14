@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Newtonsoft.Json.Linq;
 
 namespace DiscordBot
 {
@@ -17,7 +17,7 @@ namespace DiscordBot
     {
         public static DiscordClient client { get; private set; }
         public static CommandService commands { get; private set; }
-        string discordbotToken = "";
+        
 
 
         public MyBot()
@@ -35,7 +35,6 @@ namespace DiscordBot
                 input.PrefixChar = '!';
                 input.AllowMentionPrefix = true;
             });
-
             commands = client.GetService<CommandService>();
             /* init */
 
@@ -45,15 +44,17 @@ namespace DiscordBot
             commands.CreateCommand("hello").Do(async (e) =>
                 {
                     
-                    await e.Channel.SendMessage("Hi! " + e.User.NicknameMention );
-                    
+                    await e.Channel.SendMessage("こんにちは　" + e.User.NicknameMention );
+
+
                 });
 
             commands.CreateCommand("help").Do(async (e) =>
                 {
                     string help_information = "```";
                     help_information += "現在指令有\n";
-                    help_information += "!draw       : 10連抽卡\n";
+                    help_information += "!draw       : 抽卡\n";
+                    help_information += "!lots       : 求籤\n";
                     help_information += "\n\n而每個指令如\n!draw -help\n則有該指令的詳細說明\n"; // 暫定需要做到的功能
                     help_information += "```";
 
@@ -74,6 +75,7 @@ namespace DiscordBot
             UserInfo();
             Draw.DrawCardCommand();
             Instrucions.SetInstrucions();
+            Lots.DrawLotsCommand() ;
                 ;
                 ;
             /*
@@ -85,27 +87,31 @@ namespace DiscordBot
              * Discord bot login.
              * Need to put last line.
              */
-            // Get Bot Token
-            if (!File.Exists("token.txt"))
-            {
-                // Token File Not Exists
-                Console.WriteLine("Please create a file called 'token.txt' and paste your token in it!");
-                Console.WriteLine("\nPress any key to exit...");
-                Console.ReadKey();
-                Environment.Exit(0);
-            }
-            discordbotToken = File.ReadAllText("token.txt");
             client.ExecuteAndWait(async () =>
             {
+                // Get discordBot Token from json
+                string jsonstr = "";
+                try { jsonstr = File.ReadAllText("../../../Certificate.json"); }
+                catch
+                {
+                    Console.WriteLine("ERROR: 沒有找到" + "Certificate.json");
+                    Console.ReadLine();
+                    return;
+                }
+
                 /* discordBot Token */
+                JObject jsonobj = JObject.Parse(jsonstr);
+				string discordbotToken = jsonobj.GetValue("token").ToString();
                 if ( discordbotToken == "" )
                 {
-                    Console.WriteLine("Please add your discordbot key");
+                    Console.WriteLine("Please check your token from \"Certificate.json\" file");
                     Console.WriteLine("URL : https://discordapp.com/developers/applications/me");
+					Console.ReadLine(); //Pause
+					return ;
                 }
                     
                 await client.Connect( discordbotToken, TokenType.Bot);
-                client.SetGame(new Game("デレステ!"));
+                client.SetGame(new Game( jsonobj.GetValue("game").ToString() ));
             });
 
             
