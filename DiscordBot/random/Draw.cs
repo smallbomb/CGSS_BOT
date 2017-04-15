@@ -50,10 +50,15 @@ namespace DiscordBot.random
 				
 				for (int i = 0; i < user_drawcount; i++)
 				{
-					Card card = GetACard() ;
-						
-					/* what user gets a card type? */
-					if ( card.type.Equals("SSR") ) countSSR++ ;
+					Card card = null ;
+                   
+                    if ( i==9 && countSSR < 1 && countSR < 1 ) // 保底機制
+                        card = GetACard("SR");                 // 保底機制 
+                    else
+                        card = GetACard("anyone");
+
+                    /* what user gets a card type? */
+                    if ( card.type.Equals("SSR") ) countSSR++ ;
 					else if ( card.type.Equals("SR") ) countSR++ ;
 					
 					/* get the image of card and then mergeImages */
@@ -78,34 +83,7 @@ namespace DiscordBot.random
 
                 /* SendMessage */
                 await e.Channel.SendMessage(e.User.NicknameMention);
-                if (user_drawcount == 1)
-				{
-                    await e.Channel.SendFile(imagedir + "merge.Png", ToStream(mergePic, ImageFormat.Png));
-                    if (countSSR == 1)
-						await e.Channel.SendMessage(":fire:");
-					else if (countSR == 1)
-						await e.Channel.SendMessage(":see_no_evil:");
-                    
-                } 
-				else if (user_drawcount == 10)
-				{
-					if (countSSR >= 1)
-					{
-                        await e.Channel.SendFile(imagedir + "merge.Png", ToStream(mergePic, ImageFormat.Png));
-                        await e.Channel.SendMessage(":fire::fire::fire::fire::fire::fire::fire::fire::fire::fire::fire::fire:");
-                    }
-					else if (countSR >= 2)
-					{
-                        await e.Channel.SendFile(imagedir + "merge.Png", ToStream(mergePic, ImageFormat.Png));
-                        await e.Channel.SendMessage(":see_no_evil::see_no_evil:");
-                    } 
-					else
-					{
-						await e.Channel.SendFile(imagedir + "QQ.jpg");
-					}
-				}
-				else
-					Console.WriteLine("Bug:\n Draw.cs:  " + "user_drawcount" );
+                await e.Channel.SendFile(imagedir + "merge.Png", ToStream(mergePic, ImageFormat.Png));
 				
 
 				
@@ -114,7 +92,7 @@ namespace DiscordBot.random
             });
         }
 
-		private static Card GetACard()
+		private static Card GetACard( string str )
 		{
             Card card = new Card() ; 
             List<string> myCardPool = new List<string>();
@@ -139,7 +117,7 @@ namespace DiscordBot.random
                     myCardPool.Add(fname.Trim());
                 }
             }
-            else if (cardType >= 16 && cardType <= 115)
+            else if ( str.Equals("SR") || ( cardType >= 16 && cardType <= 115 ) )
             {
                 /* SR!! */
                 // 取得SR資料夾內所有檔案
