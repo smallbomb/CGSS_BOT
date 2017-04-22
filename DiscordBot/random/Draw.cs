@@ -142,7 +142,7 @@ namespace DiscordBot.random
 			return card ;	
 		} 
 				
-        private static Stream ToStream( Image image, ImageFormat format)
+        public static Stream ToStream( Image image, ImageFormat format)
         {
             var stream = new System.IO.MemoryStream();
             image.Save(stream, format);

@@ -42,11 +42,12 @@ namespace DiscordBot.random
                 else if (lotsNumber >= 84 && lotsNumber <= 100)
                     lots = "大吉.png";
 
+                Image img = Image.FromFile(imagedir + lots);
+
 
                 await e.Channel.SendMessage(e.User.Mention + "想問: \"" + ask + "\"");
-                await e.Channel.SendFile( imagedir + lots );
-                
-
+                await e.Channel.SendFile(lots, Draw.ToStream(img, ImageFormat.Png));
+                img.Dispose();
             });
 
         }
