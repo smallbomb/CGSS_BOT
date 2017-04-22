@@ -58,6 +58,9 @@ namespace DiscordBot
                     help_information += "!Agr_cgid   : 名片功能\n";
                     help_information += "!Agr_ask    : 跟8ball一樣\n";
                     help_information += "\n\n而每個指令如\n!draw -help\n則有該指令的詳細說明\n"; // 暫定需要做到的功能
+                    help_information += "Authors:\nrockon590\n";
+                    help_information += "Agreerga\n";
+                    help_information += "歡迎任何人加入\n";
                     help_information += "```";
 
                     await e.Channel.SendMessage(help_information);
@@ -129,7 +132,7 @@ namespace DiscordBot
                 var channel = e.Server.FindChannels("general", ChannelType.Text).FirstOrDefault();
 
                 var user = e.User;
-                await channel.SendTTSMessage(string.Format("{0}  has joined the channel!", user.NicknameMention));
+                await channel.SendMessage(string.Format("{0}  has joined the channel!", user.NicknameMention));
 
             };
 
@@ -138,7 +141,7 @@ namespace DiscordBot
                 var channel = e.Server.FindChannels("general", ChannelType.Text).FirstOrDefault();
 
                 var user = e.User;
-                await channel.SendTTSMessage(string.Format("{0} has left the channel!", user.NicknameMention));
+                await channel.SendMessage(string.Format("{0} has left the channel!", user.NicknameMention));
 
             };
 
