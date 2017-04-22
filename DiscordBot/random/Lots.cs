@@ -29,20 +29,18 @@ namespace DiscordBot.random
                 int lotsNumber = random.Next(100);
                 string lots = "";
                 
-                if (lotsNumber >= 1 && lotsNumber <= 4)
-                    lots = "1.png";
-                else if (lotsNumber >= 5 && lotsNumber <= 28)
-                    lots = "5.png";
-                else if (lotsNumber >= 29 && lotsNumber <= 39)
-                    lots = "29.png";
-                else if (lotsNumber >= 40 && lotsNumber <= 55)
-                    lots = "40.png";
-                else if (lotsNumber >= 56 && lotsNumber <= 70)
-                    lots = "56.png";
+                if (lotsNumber >= 1 && lotsNumber <= 9) // 9%
+                    lots = "兇.png";
+                else if (lotsNumber >= 10 && lotsNumber <= 33) // 33-10+1 = 24%
+                    lots = "吉.png";
+                else if (lotsNumber >= 34 && lotsNumber <= 49)
+                    lots = "中吉.png";
+                else if (lotsNumber >= 50 && lotsNumber <= 70)
+                    lots = "兇.png";
                 else if (lotsNumber >= 71 && lotsNumber <= 83)
-                    lots = "71.png";
+                    lots = "小吉.png";
                 else if (lotsNumber >= 84 && lotsNumber <= 100)
-                    lots = "84.png";
+                    lots = "大吉.png";
 
 
                 await e.Channel.SendMessage(e.User.Mention + "想問: \"" + ask + "\"");
@@ -66,6 +64,7 @@ namespace DiscordBot.random
             {
                 string help_information = "```";
                 help_information += "!lots \"你想祈求的內容\"\n";
+                help_information += "\n感謝Cior圖源提供\n";
                 help_information += "```";
                 await e.Channel.SendMessage(help_information);
                 return null;
@@ -74,10 +73,10 @@ namespace DiscordBot.random
             // message combine
             string str = "";
             for ( int i = 0; i < e.Args.Length; i++ ) 
-                str += e.Args[i].ToString();
+                str += e.Args[i].ToString()+" ";
 
             
-            return str;
+            return str.Trim();
         }
 
  
