@@ -49,25 +49,11 @@ namespace DiscordBot
 
                 });
 
-            commands.CreateCommand("help").Do(async (e) =>
-                {
-                    string help_information = "```";
-                    help_information += "現在指令有\n";
-                    help_information += "!draw       : 抽卡\n";
-                    help_information += "!lots       : 求籤\n";
-                    help_information += "!Agr_cgid   : 名片功能\n";
-                    help_information += "!Agr_ask    : 跟8ball一樣\n";
-                    help_information += "\n\n而每個指令如\n!draw -help\n則有該指令的詳細說明\n"; // 暫定需要做到的功能
-                    help_information += "Authors:\nrockon590\n";
-                    help_information += "Agreerga\n";
-                    help_information += "歡迎任何人加入\n";
-                    help_information += "```";
 
-                    await e.Channel.SendMessage(help_information);
-                });
-            commands.CreateCommand("千川ちひろ").Do(async (e) =>
+            commands.CreateCommand("千川ちひろ").Alias("help").Do(async (e) =>
             {
-                await e.Channel.SendMessage("rockon590が大好き^_^");
+                await help( e );
+                //await e.Channel.SendMessage("rockon590が大好き^_^");
             });
 
             /*
@@ -120,6 +106,23 @@ namespace DiscordBot
             });
 
             
+        }
+
+        private  async Task help( CommandEventArgs e )
+        {
+            string help_information = "```";
+            help_information += "現在指令有\n";
+            help_information += "!draw       : 抽卡\n";
+            help_information += "!lots       : 求籤\n";
+            help_information += "!Agr_cgid   : 名片功能\n";
+            help_information += "!Agr_ask    : 跟8ball一樣\n";
+            help_information += "\n而每個指令如!draw -help則有該指令的詳細說明\n\n"; // 暫定需要做到的功能
+            help_information += "歡迎任何人加入\nAuthors:\n";
+            help_information += "\trockon590\n";
+            help_information += "\tAgreerga\n";
+            help_information += "```";
+
+            await e.Channel.SendMessage(help_information);
         }
 
         private void UserInfo()
