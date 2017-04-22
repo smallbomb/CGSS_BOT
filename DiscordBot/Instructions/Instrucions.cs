@@ -84,7 +84,6 @@ namespace DiscordBot.Instructions
         // ======================== 切割指令做分類 =============================
         public static void ReceiveMessage(string[] messages, MessageEventArgs e)
         {
-            Console.WriteLine(messages.Length);
             switch (messages.Length)
             {
                 case 1:

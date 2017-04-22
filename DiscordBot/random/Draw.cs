@@ -18,7 +18,7 @@ namespace DiscordBot.random
 
 		private class Card
 		{
-			public string name = "" ;
+            public string name = "" ;
             public string type = "" ;
 		}
 
@@ -41,8 +41,6 @@ namespace DiscordBot.random
 
                 if ( ( user_drawcount = await DrawOptionAsync(e) ) == -1 ) 
 					return ;
-
-                
 
                 Image mergePic = null;
                 Image temp_mergePic = null;
@@ -74,11 +72,11 @@ namespace DiscordBot.random
 					else if ( i >= 1 )
 					{
 						Image tempPic = Image.FromFile( card.name );
-						mergePic = HorizontalMergeImages(mergePic, tempPic);
+						mergePic = HorizontalMergeImages(mergePic, tempPic, 20);
 						tempPic.Dispose();
 					}
 				} 
-				if ( user_drawcount == 10 ) mergePic = VerticalMergeImages(temp_mergePic, mergePic); // mergePic 是後來抽到的5~10張
+				if ( user_drawcount == 10 ) mergePic = VerticalMergeImages(temp_mergePic, mergePic, 20); // mergePic 是後來抽到的5~10張
 
 
                 /* SendMessage */
@@ -131,19 +129,17 @@ namespace DiscordBot.random
             {
                 /* R */
                 // 取得R資料夾內所有檔案
-								card.type = "R" ;
+				card.type = "R" ;
                 foreach (string fname in Directory.GetFiles(imagedir + dir_R))
                 {
                     myCardPool.Add(fname.Trim());
                 }
             }
 
-            Console.WriteLine("myCardPool.count :" + myCardPool.Count);
-						
             card.name = myCardPool[random.Next(myCardPool.Count)];
             Console.WriteLine("card :" + card.name);
-						myCardPool.Clear();
-						return card ;	
+			myCardPool.Clear();
+			return card ;	
 		} 
 				
         private static Stream ToStream( Image image, ImageFormat format)
@@ -153,6 +149,8 @@ namespace DiscordBot.random
             stream.Position = 0;
             return stream;
         }
+
+
 
         private static async Task<int> DrawOptionAsync(CommandEventArgs e)
         {
@@ -196,12 +194,11 @@ namespace DiscordBot.random
             }
         }
 
-        private static Image VerticalMergeImages(Image img1, Image img2)
+        private static Image VerticalMergeImages(Image img1, Image img2, int space)
         {
             Image MergedImage = default(Image);
             Int32 Wide = 0;
             Int32 High = 0;
-            int space = 20; // definition
             High = img1.Height + img2.Height + space;//設定高度          
             if (img1.Width >= img2.Width)
             {
@@ -223,13 +220,12 @@ namespace DiscordBot.random
 
         }
 
-        private static Image HorizontalMergeImages(Image img1, Image img2)
+        private static Image HorizontalMergeImages(Image img1, Image img2, int space)
         {
 
             Image MergedImage = default(Image);
             Int32 Wide = 0;
             Int32 High = 0;
-            int space = 20; // definition
             Wide = img1.Width + img2.Width + space;//設定寬度           
             if (img1.Height >= img2.Height)
             {
