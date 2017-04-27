@@ -49,9 +49,11 @@ namespace DiscordBot.random
 				for (int i = 0; i < user_drawcount; i++)
 				{
 					Card card = null ;
-                   
-                    if ( i==9 && countSSR < 1 && countSR < 1 ) // 保底機制
-                        card = GetACard("SR");                 // 保底機制 
+
+                    if (e.Args.Length >= 2 && e.Args[1].ToLower().Equals("-bug"))
+                        card = GetACard("SSR");
+                    else if (i == 9 && countSSR < 1 && countSR < 1) // 保底機制
+                        card = GetACard("SR");                      // 保底機制 
                     else
                         card = GetACard("anyone");
 
@@ -94,8 +96,14 @@ namespace DiscordBot.random
 		{
             Card card = new Card() ; 
             List<string> myCardPool = new List<string>();
-            int cardType = random.Next(1000);
-            if (cardType >= 1 && cardType <= 6)
+            int cardType;
+
+            if (str.Equals("SSR"))
+                cardType = random.Next(15); // cheat: 0~15 include 0
+            else
+                cardType = random.Next(1000); // normal: 0~1000 include 0
+
+            if ( cardType >= 0 && cardType <= 5) // 6%
             {
                 /* 期間SSR!! */
                 // 取得bounsSSR資料夾內所有檔案
@@ -105,7 +113,7 @@ namespace DiscordBot.random
                     myCardPool.Add(fname.Trim());
                 }
             }
-            else if (cardType >= 7 && cardType <= 15)
+            else if (cardType >= 6 && cardType <= 14) // 14-6+1 = 9%
             {
                 /* SSR!! */
                 // 取得SR資料夾內所有檔案
@@ -115,7 +123,7 @@ namespace DiscordBot.random
                     myCardPool.Add(fname.Trim());
                 }
             }
-            else if ( str.Equals("SR") || ( cardType >= 16 && cardType <= 115 ) )
+            else if ( str.Equals("SR") || ( cardType >= 15 && cardType <= 114 ) )
             {
                 /* SR!! */
                 // 取得SR資料夾內所有檔案
@@ -129,7 +137,7 @@ namespace DiscordBot.random
             {
                 /* R */
                 // 取得R資料夾內所有檔案
-				card.type = "R" ;
+                card.type = "R" ;
                 foreach (string fname in Directory.GetFiles(imagedir + dir_R))
                 {
                     myCardPool.Add(fname.Trim());
@@ -158,8 +166,7 @@ namespace DiscordBot.random
             if (e.Args.Length == 0)
             {
                 return 1; //執行單抽
-            }
-
+            }      
             else if (e.Args[0].ToLower().Equals("10"))
             {
                 return 10; //執行10連
@@ -183,6 +190,7 @@ namespace DiscordBot.random
                 help_information += "此為!draw參數說明\n";
                 help_information += "-v      :可以看現在更新的卡池日期\n";
                 help_information += "10      :10連抽\n";
+                help_information += "10 -bug :你可以試試看\n";
                 help_information += "```";
                 await e.Channel.SendMessage(help_information);
                 return -1;

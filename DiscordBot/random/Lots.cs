@@ -28,18 +28,30 @@ namespace DiscordBot.random
 
                 int lotsNumber = random.Next(100);
                 string lots = "";
-                
-                if (lotsNumber >= 1 && lotsNumber <= 9) // 9%
-                    lots = "兇.png";
-                else if (lotsNumber >= 10 && lotsNumber <= 33) // 33-10+1 = 24%
+
+                if (ask.Equals("大凶")) 
+                    lots = "大凶.png";
+                else if (ask.Equals("吉")) 
                     lots = "吉.png";
-                else if (lotsNumber >= 34 && lotsNumber <= 49)
+                else if (ask.Equals("中吉"))
                     lots = "中吉.png";
-                else if (lotsNumber >= 50 && lotsNumber <= 70)
+                else if (ask.Equals("兇"))
                     lots = "兇.png";
-                else if (lotsNumber >= 71 && lotsNumber <= 83)
+                else if (ask.Equals("小吉"))
                     lots = "小吉.png";
-                else if (lotsNumber >= 84 && lotsNumber <= 100)
+                else if (ask.Equals("大吉"))
+                    lots = "大吉.png";
+                else if(lotsNumber >= 0 && lotsNumber <= 8) // 8-0+1 = 9%
+                    lots = "大凶.png";
+                else if (lotsNumber >= 9 && lotsNumber <= 32) // 32-9+1 = 24%
+                    lots = "吉.png";
+                else if (lotsNumber >= 33 && lotsNumber <= 48)
+                    lots = "中吉.png";
+                else if (lotsNumber >= 49 && lotsNumber <= 69)
+                    lots = "兇.png";
+                else if (lotsNumber >= 70 && lotsNumber <= 82)
+                    lots = "小吉.png";
+                else if (lotsNumber >= 83 && lotsNumber <= 99)
                     lots = "大吉.png";
 
                 Image img = Image.FromFile(imagedir + lots);
@@ -65,6 +77,8 @@ namespace DiscordBot.random
             {
                 string help_information = "```";
                 help_information += "!lots \"你想祈求的內容\"\n";
+                help_information += "!lots \"吉\"\n";
+                help_information += "!lots \"大凶\"...可以直接選該簽\n";
                 help_information += "\n感謝Cior圖源提供\n";
                 help_information += "```";
                 await e.Channel.SendMessage(help_information);
