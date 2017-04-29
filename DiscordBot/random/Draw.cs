@@ -1,4 +1,6 @@
 ﻿using Discord.Commands;
+using DiscordBot.data.database.draw;
+
 
 using System.Drawing;
 using System;
@@ -10,6 +12,8 @@ using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Drawing.Imaging;
+
+
 
 namespace DiscordBot.random
 {
@@ -32,13 +36,13 @@ namespace DiscordBot.random
         private static string version = "version.json";
         private static string jsonstr = "";
 
+
         public static void DrawCardCommand()
         {
-            int user_drawcount = 0 ;
+            int user_drawcount = 0;
 
             commands.CreateCommand("draw").Parameter("message", ParameterType.Multiple).Do(async (e) =>
             {
-
                 if ( ( user_drawcount = await DrawOptionAsync(e) ) == -1 ) 
 					return ;
 
@@ -50,7 +54,7 @@ namespace DiscordBot.random
 				{
 					Card card = null ;
 
-                    if (e.Args.Length >= 2 && e.Args[1].ToLower().Equals("-bug"))
+                    if (e.Args.Length == 2 && e.Args[1].ToLower().Equals("-bug"))
                         card = GetACard("SSR");
                     else if (i == 9 && countSSR < 1 && countSR < 1) // 保底機制
                         card = GetACard("SR");                      // 保底機制 
@@ -81,15 +85,19 @@ namespace DiscordBot.random
 				if ( user_drawcount == 10 ) mergePic = VerticalMergeImages(temp_mergePic, mergePic, 20); // mergePic 是後來抽到的5~10張
 
 
+
+                /* UpdateDatabase()*/
+                if ( (e.Args.Length == 2 && e.Args[1].ToLower().Equals("-bug")) == false )
+                     DatabasePersonalUpdate(e, countSSR, countSR, (user_drawcount-countSR-countSSR), user_drawcount);
                 /* SendMessage */
                 await e.Channel.SendMessage(e.User.NicknameMention);
                 await e.Channel.SendFile(imagedir + "merge.Png", ToStream(mergePic, ImageFormat.Png));
 				
-
-				
                 mergePic.Dispose();
                 temp_mergePic.Dispose();
             });
+            
+
         }
 
 		private static Card GetACard( string str )
@@ -150,56 +158,74 @@ namespace DiscordBot.random
 			return card ;	
 		} 
 				
-        public static Stream ToStream( Image image, ImageFormat format)
-        {
-            var stream = new System.IO.MemoryStream();
-            image.Save(stream, format);
-            stream.Position = 0;
-            return stream;
-        }
-
-
-
         private static async Task<int> DrawOptionAsync(CommandEventArgs e)
         {
 
             if (e.Args.Length == 0)
             {
                 return 1; //執行單抽
-            }      
-            else if (e.Args[0].ToLower().Equals("10"))
-            {
-                return 10; //執行10連
             }
-            else if (e.Args[0].ToLower().Equals("-v"))
+            else if (e.Args.Length == 1)
             {
-                try { jsonstr = File.ReadAllText(imagedir + version); } catch { }
-                JObject jsonobj = JObject.Parse(jsonstr);
-                jsonobj.GetValue("cardpoolname");
-                jsonobj.GetValue("date");
-                string versionmessage = "卡池名稱:\n    " + jsonobj.GetValue("cardpoolname") + "\n\n";
-                versionmessage += "日期:\n    " + jsonobj.GetValue("date") + "\n\n";
-                versionmessage += "機率:" + "\nSSR " + jsonobj.GetValue("SSRProb").ToString().PadLeft(8) + "\nSR  " + jsonobj.GetValue("SRProb").ToString().PadLeft(8) + "\nR   " + jsonobj.GetValue("RProb").ToString().PadLeft(8) + "\n";
+                if (e.Args[0].ToLower().Equals("10"))
+                {
+                    return 10; //執行10連
+                }
+                else if (e.Args[0].ToLower().Equals("-v"))
+                {
+                    try { jsonstr = File.ReadAllText(imagedir + version); } catch { }
+                    JObject jsonobj = JObject.Parse(jsonstr);
+                    jsonobj.GetValue("cardpoolname");
+                    jsonobj.GetValue("date");
+                    string versionmessage = "卡池名稱:\n    " + jsonobj.GetValue("cardpoolname") + "\n\n";
+                    versionmessage += "日期:\n    " + jsonobj.GetValue("date") + "\n\n";
+                    versionmessage += "機率:" + "\nSSR " + jsonobj.GetValue("SSRProb").ToString().PadLeft(8) + "\nSR  " + jsonobj.GetValue("SRProb").ToString().PadLeft(8) + "\nR   " + jsonobj.GetValue("RProb").ToString().PadLeft(8) + "\n";
 
-                await e.Channel.SendMessage("```" + versionmessage + "```");
-                return -1;
+                    await e.Channel.SendMessage("```" + versionmessage + "```");
+                    return -1;
+                }
+                else if (e.Args[0].ToLower().Equals("-help"))
+                {
+                    string help_information = "```";
+                    help_information += "此為!draw參數說明\n";
+                    help_information += "-v      :可以看現在更新的卡池日期\n";
+                    help_information += "10      :10連抽\n";
+                    help_information += "10 -bug :你可以試試看\n";
+                    help_information += "-init   :抽卡資料初始化，至少輸入過一次，沒輸入過將不會記錄任何資料\n";
+                    help_information += "-prob   :算出目前抽到的SSR機率 不紀錄使用-bug模式\n";
+                    help_information += "```";
+                    await e.Channel.SendMessage(help_information);
+                    return -1;
+                }
+                else if (e.Args[0].ToLower().Equals("-init"))
+                {
+                    DatabasePersonalInit(e);
+                    await e.Channel.SendMessage(e.User.NicknameMention + " 您的資料已初始化");
+                    return -1;
+                }
+                else if (e.Args[0].ToLower().Equals("-prob"))
+                {
+                    await DatabasePersonalProb(e);
+                    return -1;
+                }
             }
-            else if (e.Args[0].ToLower().Equals("-help"))
+            else if (e.Args.Length == 2 && e.Args[0].ToLower().Equals("10") && e.Args[1].ToLower().Equals("-bug"))
             {
-                string help_information = "```";
-                help_information += "此為!draw參數說明\n";
-                help_information += "-v      :可以看現在更新的卡池日期\n";
-                help_information += "10      :10連抽\n";
-                help_information += "10 -bug :你可以試試看\n";
-                help_information += "```";
-                await e.Channel.SendMessage(help_information);
-                return -1;
+                return 10;
             }
-            else
-            {
-                await e.Channel.SendMessage("```請打 \"!draw -help\" 看那些參數可使用\n```");
-                return -1;
-            }
+
+
+            await e.Channel.SendMessage("```請打 \"!draw -help\" 看那些參數可使用\n```");
+            return -1;
+            
+        }
+
+        public static Stream ToStream(Image image, ImageFormat format)
+        {
+            var stream = new System.IO.MemoryStream();
+            image.Save(stream, format);
+            stream.Position = 0;
+            return stream;
         }
 
         private static Image VerticalMergeImages(Image img1, Image img2, int space)
@@ -253,6 +279,84 @@ namespace DiscordBot.random
             gr.Dispose();
             return MergedImage;
         }
+
+        private static void DatabasePersonalInit(CommandEventArgs e)
+        {
+            using (var context = new discordbotEntities_draw())
+            {
+                
+                string str = e.Server.Id.ToString();
+                var entity = context.personal.Where(input => (input.userid == e.User.NicknameMention && input.channal == str) ).FirstOrDefault();
+
+                if (entity != null)
+                {
+                    entity.username = e.User.Name;
+                    entity.SSR = 0;
+                    entity.SR = 0;
+                    entity.R = 0;
+                    entity.totaldrawcount = 0;
+                }
+                else
+                {
+                    context.personal.Add(new personal
+                    {
+                        userid = e.User.NicknameMention,
+                        username = e.User.Name,
+                        channal = e.Server.Id.ToString(),
+                        SSR = 0,
+                        SR = 0,
+                        R = 0,
+                        totaldrawcount = 0
+                    });
+                }
+                context.SaveChanges();
+            }
+        }
+
+        private static void DatabasePersonalUpdate(CommandEventArgs e, int countSSR, int countSR, int countR, int count)
+        {
+            using (var context = new discordbotEntities_draw())
+            {
+                string str = e.Server.Id.ToString();
+                var entity = context.personal.Where(input => (input.userid == e.User.NicknameMention && input.channal == str)).FirstOrDefault();
+                if (entity != null)
+                {
+                    entity.username = e.User.Name;
+                    entity.SSR += countSSR;
+                    entity.SR += countSR;
+                    entity.R += countR;
+                    entity.totaldrawcount += count;
+                }
+                context.SaveChanges();
+            }
+        }
+
+        private static async Task DatabasePersonalProb(CommandEventArgs e)
+        {
+            using (var context = new discordbotEntities_draw())
+            {
+                string str = e.Server.Id.ToString();
+                var entity = context.personal.Where(input => (input.userid == e.User.NicknameMention && input.channal == str)).FirstOrDefault();
+                if (entity != null)
+                {
+                    if (entity.totaldrawcount == 0)
+                    {
+                        await e.Channel.SendMessage(e.User.NicknameMention + " SSR機率約為:" + "0.00%" + " 已抽0張");
+
+                    }
+                    else
+                    {
+                        await e.Channel.SendMessage(e.User.NicknameMention + " SSR機率約為:" + (Math.Round((double)entity.SSR / (double)entity.totaldrawcount, 4) * 100).ToString() + "%" + " 已抽" + entity.totaldrawcount + "張" );
+                    }
+
+                }
+                else
+                {
+                    await e.Channel.SendMessage(e.User.NicknameMention + " 您還沒有建立資料請輸入:\n!draw -init");
+                }
+            }
+        }
+
     }
 
 }

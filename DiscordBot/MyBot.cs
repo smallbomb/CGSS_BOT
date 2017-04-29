@@ -42,12 +42,11 @@ namespace DiscordBot
              *  Default info 
              */
             commands.CreateCommand("hello").Do(async (e) =>
-                {
-                    
+                {            
                     await e.Channel.SendMessage("こんにちは　" + e.User.NicknameMention );
 
-
                 });
+
 
 
             commands.CreateCommand("千川ちひろ").Alias("help").Do(async (e) =>
@@ -107,6 +106,7 @@ namespace DiscordBot
 
             
         }
+
 
         private  async Task help( CommandEventArgs e )
         {
