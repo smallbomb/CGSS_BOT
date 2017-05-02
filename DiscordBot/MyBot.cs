@@ -67,6 +67,7 @@ namespace DiscordBot
             Draw.DrawCardCommand();
             Instrucions.SetInstrucions();
             Lots.DrawLotsCommand() ;
+            PickSong.SetSongs();
                 ;
                 ;
             /*
