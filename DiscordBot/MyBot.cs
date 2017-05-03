@@ -29,7 +29,7 @@ namespace DiscordBot
                 x.LogHandler = Log;
                 
             });
-           
+            
             client.UsingCommands(input =>
             {
                 input.PrefixChar = '!';
@@ -47,13 +47,46 @@ namespace DiscordBot
 
                 });
 
-
-
             commands.CreateCommand("千川ちひろ").Alias("help").Do(async (e) =>
             {
                 await help( e );
                 //await e.Channel.SendMessage("rockon590が大好き^_^");
             });
+
+
+            commands.CreateCommand("admin").Parameter("message", ParameterType.Multiple).Do(async (e) =>
+            {
+                string jsonstr = "";
+                try { jsonstr = File.ReadAllText("../../../Certificate.json"); }
+                catch
+                {
+                    Console.WriteLine("ERROR: 沒有找到" + "Certificate.json");
+                    Console.ReadKey();
+                }
+
+                /* discordBot Token */
+                JObject jsonobj = JObject.Parse(jsonstr);
+                string owner = jsonobj.GetValue("owner").ToString();
+                if ( owner != null && owner.Equals(e.User.NicknameMention) )
+                {
+                    if ( e.Args.Length == 1 )
+                    {
+                        if ( e.Args[0].Equals("晚安") )
+                        {
+                            var eu_channel = client.GetServer(293706623652724736).GetChannel(299934136448057365); // eu testlab
+                            var nmw_channel = client.GetServer(257033414576701442).GetChannel(295057576020934656); // nmw gambling
+                            var lika_channel = client.GetServer(308898984200765450).GetChannel(308908235413389314); // lika gambling
+                            await eu_channel.SendMessage("みなさん、おやすみなさい" );
+                            await nmw_channel.SendMessage("みなさん、おやすみなさい");
+                            await lika_channel.SendMessage("みなさん、おやすみなさい");
+                            return;
+                        }
+                            
+                    }
+                }
+            });
+
+
 
             /*
              *  End Default info
@@ -106,6 +139,7 @@ namespace DiscordBot
 
             
         }
+
 
 
         private  async Task help( CommandEventArgs e )
