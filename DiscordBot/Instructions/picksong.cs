@@ -13,9 +13,9 @@ namespace DiscordBot.Instructions
 
         public static void ResponseMessage_Helper(MessageEventArgs e)
         {
-            string helpStr = "```請使用!Agr_AddSong建立歌曲, 格式為 !Agr_AddSong [曲名] [屬性]";
-            helpStr += "\n!Agr_EditSong編輯歌曲資訊, 格式為 !Agr_EditSong [曲名] [Master等級] [MasterNote數] ... [封面] (不含M+)";
-            helpStr += "\n請使用!Agr_ShowSong顯示歌曲資訊, 格式為 !Agr_ShowSong [曲名]";
+            string helpStr = "```請使用!Agr_AddSong建立歌曲\n格式為 !Agr_AddSong [曲名] [屬性]";
+            helpStr += "\n請使用!Agr_EditSong編輯歌曲資訊\n格式為 !Agr_EditSong [曲名] [Master等級] [MasterNote數] ... [封面] (不含M+)";
+            helpStr += "\n請使用!Agr_ShowSong顯示歌曲資訊\n格式為 !Agr_ShowSong [曲名]";
             helpStr += "\n[屬性] 包含 キュート  パッション  クール  全タイプ";
             helpStr += "\n抽歌及美化功能製作中...```";
             e.Channel.SendMessage(helpStr);
@@ -153,7 +153,7 @@ namespace DiscordBot.Instructions
             int bits = 3;
             if (num < 100) bits = 2;
             int DisplayNumber = 0;
-            for (int index = bits - 1; index >= 0; index--)
+            for (int index = 0; index < bits; index++)
             {
                 DisplayNumber = (num % ((int)Math.Pow(10, bits - index))) / ((int)Math.Pow(10, bits - index - 1));
                 nums += GetNumberString(DisplayNumber) + " ";
