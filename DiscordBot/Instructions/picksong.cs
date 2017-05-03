@@ -15,7 +15,7 @@ namespace DiscordBot.Instructions
         {
             string helpStr = "```請使用!Agr_AddSong建立歌曲, 格式為 !Agr_AddSong [曲名] [屬性]";
             helpStr += "\n!Agr_EditSong編輯歌曲資訊, 格式為 !Agr_EditSong [曲名] [Master等級] [MasterNote數] ... [封面] (不含M+)";
-            helpStr = "\n```請使用!Agr_ShowSong顯示歌曲資訊, 格式為 !Agr_ShowSong [曲名]";
+            helpStr += "\n```請使用!Agr_ShowSong顯示歌曲資訊, 格式為 !Agr_ShowSong [曲名]";
             helpStr += "\n[屬性] 包含 キュート  パッション  クール  全タイプ";
             helpStr += "\n抽歌及美化功能製作中...```";
             e.Channel.SendMessage(helpStr);
