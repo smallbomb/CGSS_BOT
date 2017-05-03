@@ -14,9 +14,9 @@ namespace DiscordBot.Instructions
         public static void ResponseMessage_Helper(MessageEventArgs e)
         {
             string helpStr = "```請使用!Agr_AddSong建立歌曲, 格式為 !Agr_AddSong [曲名] [屬性]";
-            helpStr += "\n!Agr_EditSong編輯歌曲資訊, 格式為 !Agr_EditSong [曲名] [屬性] [Master等級] [MasterNote數] ... (不含M+)";
-            helpStr = "\n```請使用!Agr_ShowSong顯示歌曲資訊, 格式為 !Agr_ShowSong [曲名] [屬性]";
-            helpStr += "\n[屬性] 包含 cu  pa  co  all 四種";
+            helpStr += "\n!Agr_EditSong編輯歌曲資訊, 格式為 !Agr_EditSong [曲名] [Master等級] [MasterNote數] ... [封面] (不含M+)";
+            helpStr = "\n```請使用!Agr_ShowSong顯示歌曲資訊, 格式為 !Agr_ShowSong [曲名]";
+            helpStr += "\n[屬性] 包含 キュート  パッション  クール  全タイプ";
             helpStr += "\n抽歌及美化功能製作中...```";
             e.Channel.SendMessage(helpStr);
         }
@@ -27,12 +27,11 @@ namespace DiscordBot.Instructions
             {
                 ResponseMessage_Helper(e);
             }
-            if (messages.Length == 3)
+            if (messages.Length == 2)
             {
                 if (messages[0] == "!Agr_ShowSong")
                 {
-                    if (messages[2] == "パッション" || messages[2] == "キュート" || messages[2] == "クール" || messages[2] == "全タイプ")
-                        ShowSongInfo(messages[1], messages[2], e);
+                    ShowSongInfo(messages[1], e);
                 }
             }
             if (messages.Length == 3)
@@ -43,7 +42,7 @@ namespace DiscordBot.Instructions
                         CreateSongs(messages[1], messages[2], e);
                 }
             }
-            if (messages.Length == 12)
+            if (messages.Length == 11)
             {
                 if (messages[0] == "!Agr_EditSong")
                 {
@@ -74,7 +73,7 @@ namespace DiscordBot.Instructions
         // =====================================================================
         public static void CreateSongs(string songName, string type, MessageEventArgs e)
         {
-            if (!File.Exists(jsonSongs + type + "/" + songName))
+            if (!File.Exists(jsonSongs + type + "/" + songName + ".json"))
             {
                 StreamWriter sw = new StreamWriter(jsonSongs + type + "/" + songName + ".json");
                 sw.WriteLine("{");
@@ -96,23 +95,47 @@ namespace DiscordBot.Instructions
         public static void SetSongInfo(string[] message, MessageEventArgs e)
         {
             string json = "";
-            try { json = File.ReadAllText(jsonSongs + message[2] + "/" + message[1] + ".json"); } catch { }
+            if (File.Exists(jsonSongs + "キュート/" + message[1] + ".json"))
+                json = File.ReadAllText(jsonSongs + "キュート/" + message[1] + ".json");
+            else if (File.Exists(jsonSongs + "パッション/" + message[1] + ".json"))
+                json = File.ReadAllText(jsonSongs + "パッション/" + message[1] + ".json");
+            else if (File.Exists(jsonSongs + "クール/" + message[1] + ".json"))
+                json = File.ReadAllText(jsonSongs + "クール/" + message[1] + ".json");
+            else if (File.Exists(jsonSongs + "全タイプ/" + message[1] + ".json"))
+                json = File.ReadAllText(jsonSongs + "全タイプ/" + message[1] + ".json");
             dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
-            jsonObj["MLV"] = Convert.ToInt32(message[9]);
-            jsonObj["MNOTES"] = Convert.ToInt32(message[10]);
-            jsonObj["PLV"] = Convert.ToInt32(message[7]);
-            jsonObj["PNOTES"] = Convert.ToInt32(message[8]);
-            jsonObj["RLV"] = Convert.ToInt32(message[5]);
-            jsonObj["RNOTES"] = Convert.ToInt32(message[6]);
-            jsonObj["DLV"] = Convert.ToInt32(message[3]);
-            jsonObj["DNOTES"] = Convert.ToInt32(message[4]);
-            jsonObj["AVA"] = message[11];
+            jsonObj["MLV"] = Convert.ToInt32(message[8]);
+            jsonObj["MNOTES"] = Convert.ToInt32(message[9]);
+            jsonObj["PLV"] = Convert.ToInt32(message[6]);
+            jsonObj["PNOTES"] = Convert.ToInt32(message[7]);
+            jsonObj["RLV"] = Convert.ToInt32(message[4]);
+            jsonObj["RNOTES"] = Convert.ToInt32(message[5]);
+            jsonObj["DLV"] = Convert.ToInt32(message[2]);
+            jsonObj["DNOTES"] = Convert.ToInt32(message[3]);
+            jsonObj["AVA"] = message[10];
             string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
-            File.WriteAllText(jsonSongs + message[2] + "/" + message[1] + ".json", output);
+            if (File.Exists(jsonSongs + "キュート/" + message[1] + ".json"))
+                File.WriteAllText(jsonSongs + "キュート/" + message[1] + ".json", output);
+            else if (File.Exists(jsonSongs + "パッション/" + message[1] + ".json"))
+                File.WriteAllText(jsonSongs + "パッション/" + message[1] + ".json", output);
+            else if (File.Exists(jsonSongs + "クール/" + message[1] + ".json"))
+                File.WriteAllText(jsonSongs + "クール/" + message[1] + ".json", output);
+            else if (File.Exists(jsonSongs + "全タイプ/" + message[1] + ".json"))
+                File.WriteAllText(jsonSongs + "全タイプ/" + message[1] + ".json", output);
+
         }
-        public static void ShowSongInfo(string songName, string type, MessageEventArgs e)
+        public static void ShowSongInfo(string songName, MessageEventArgs e)
         {
-            string json = File.ReadAllText(jsonSongs + type + "/" + songName + ".json");
+            string json = "";
+            if (File.Exists(jsonSongs + "キュート/" + songName + ".json"))
+                json = File.ReadAllText(jsonSongs + "キュート/" + songName + ".json");
+            else if (File.Exists(jsonSongs + "パッション/" + songName + ".json"))
+                json = File.ReadAllText(jsonSongs + "パッション/" + songName + ".json");
+            else if (File.Exists(jsonSongs + "クール/" + songName + ".json"))
+                json = File.ReadAllText(jsonSongs + "クール/" + songName + ".json");
+            else if (File.Exists(jsonSongs + "全タイプ/" + songName + ".json"))
+                json = File.ReadAllText(jsonSongs + "全タイプ/" + songName + ".json");
+
             dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
 
             string history = songName + "        " + jsonObj["TYPE"];
