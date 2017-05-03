@@ -1,99 +1,54 @@
 ﻿using Discord;
 using System;
-
 using System.IO;
-using Newtonsoft.Json.Linq;
 
 namespace DiscordBot.Instructions
 {
-    public class Instrucions : MyBot
+    public class PickSong : MyBot
     {
         // 說明指令Json檔案
-        public static string jsonHelper = "../../Instructions/Instructions_Helper.json";
-        // BOT回答答案
-        public static int BotAnswerCount = 4;
-        public static string[] BotAnswer = { "Yes", "Maybe", "No", "I don't know"};
+        public static string jsonSongs = "../../data/songs/";
         // 隨機種子產生器
         public static Random random = new Random(Guid.NewGuid().GetHashCode());
-        // ========================== 說明指令集 ===============================
-        public static void ResponseMessage_Helper(string messages, MessageEventArgs e)
-        {
-            string jsonString = "";
-            try { jsonString = File.ReadAllText(jsonHelper); } catch { }
-            JObject jsonObject = JObject.Parse(jsonString);
 
-            e.Channel.SendMessage(jsonObject.GetValue(messages).ToString());
-        }
-        // =====================================================================
-        // ======================== 單一字詞指令集 =============================
-        public static void ResponseMessage_Single(string messages, MessageEventArgs e)
+        public static void ResponseMessage_Helper(MessageEventArgs e)
         {
-            switch (messages)
-            {
-                case "!Agr_Hello":
-                    {
-                        e.Channel.SendMessage("```World!```");
-                    }
-                    break;
-                case "!Agr_卯月":
-                    {
-                        e.Channel.SendFile("../../envelope/QQ.jpg");
-                    }
-                    break;
-                case "!Agr_gatya":
-                    {
-                        //e.Channel.SendMessage(e.User.NicknameMention); 功能一樣 沒必要放
-                        //CGGetya.CGGetyaCommand(e); 功能一樣 沒必要放
-                    }
-                    break;
-                default:
-                    break;
-            }
+            string helpStr = "```請使用!Agr_AddSong建立歌曲, 格式為 !Agr_AddSong [曲名] [屬性]";
+            helpStr += "\n!Agr_EditSong編輯歌曲資訊, 格式為 !Agr_EditSong [曲名] [屬性] [Master等級] [MasterNote數] ... (不含M+)";
+            helpStr = "\n```請使用!Agr_ShowSong顯示歌曲資訊, 格式為 !Agr_ShowSong [曲名] [屬性]";
+            helpStr += "\n[屬性] 包含 cu  pa  co  all 四種";
+            helpStr += "\n抽歌及美化功能製作中...```";
+            e.Channel.SendMessage(helpStr);
         }
-        // =====================================================================
-        // ====================== 夾帶單一參數指令集 ===========================
-        public static void ResponseMessage_Double(string messages, string param, MessageEventArgs e)
-        {
-            // Help 說明指令
-            if(param == "help")
-            {
-                ResponseMessage_Helper(messages, e);
-                return;
-            }
-            switch (messages)
-            {
-                case "!Agr_ask":
-                    {
-                        string output =
-                            e.Message.User + " : " +
-                            param + " ?\nAnswer Is : " +
-                            BotAnswer[random.Next(BotAnswerCount)];
-                        e.Channel.SendMessage("```" + output + "```");
-                    }
-                    break;
-                case "!Agr_cgid":
-                    {
-                        e.Channel.SendMessage("https://deresute.me/" + param + "/large");
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-        // =====================================================================
-        // ======================== 切割指令做分類 =============================
+
         public static void ReceiveMessage(string[] messages, MessageEventArgs e)
         {
-            switch (messages.Length)
+            if (messages[0] == "!Agr_Song")
             {
-                case 1:
-                    ResponseMessage_Single(messages[0], e);
-                    break;
-                case 2:
-                    ResponseMessage_Double(messages[0], messages[1], e);
-                    break;
-                default:
-                    break;
+                ResponseMessage_Helper(e);
+            }
+            if (messages.Length == 3)
+            {
+                if (messages[0] == "!Agr_ShowSong")
+                {
+                    if (messages[2] == "パッション" || messages[2] == "キュート" || messages[2] == "クール" || messages[2] == "全タイプ")
+                        ShowSongInfo(messages[1], messages[2], e);
+                }
+            }
+            if (messages.Length == 3)
+            {
+                if (messages[0] == "!Agr_AddSong")
+                {
+                    if (messages[2] == "パッション" || messages[2] == "キュート" || messages[2] == "クール" || messages[2] == "全タイプ")
+                        CreateSongs(messages[1], messages[2], e);
+                }
+            }
+            if (messages.Length == 12)
+            {
+                if (messages[0] == "!Agr_EditSong")
+                {
+                    SetSongInfo(messages, e);
+                }
             }
         }
         // =====================================================================
@@ -111,18 +66,114 @@ namespace DiscordBot.Instructions
             };
         }
         // =====================================================================
-        // ========================= 其餘功能放置處 ============================
-        public static void OtherFeatures()
-        {
-        }
-        // =====================================================================
         // ============================ 建構式 =================================
-        public static void SetInstrucions()
+        public static void SetSongs()
         {
             MessageParser();            // 回應文字指令
-
-            OtherFeatures();            // Bot 其他功能
         }
         // =====================================================================
+        public static void CreateSongs(string songName, string type, MessageEventArgs e)
+        {
+            if (!File.Exists(jsonSongs + type + "/" + songName))
+            {
+                StreamWriter sw = new StreamWriter(jsonSongs + type + "/" + songName + ".json");
+                sw.WriteLine("{");
+                sw.WriteLine("  \"TYPE\": \"" + type + "\",");
+                sw.WriteLine("  \"MLV\": 0,");
+                sw.WriteLine("  \"MNOTES\": 0,");
+                sw.WriteLine("  \"PLV\": 0,");
+                sw.WriteLine("  \"PNOTES\": 0,");
+                sw.WriteLine("  \"RLV\": 0,");
+                sw.WriteLine("  \"RNOTES\": 0,");
+                sw.WriteLine("  \"DLV\": 0,");
+                sw.WriteLine("  \"DNOTES\": 0,");
+                sw.WriteLine("  \"AVA\": \"\"");
+                sw.Write("}");
+                sw.Close();
+                e.Channel.SendMessage("建立" + songName + " ，請使用!Agr_EditSong編輯歌曲資訊");
+            }
+        }
+        public static void SetSongInfo(string[] message, MessageEventArgs e)
+        {
+            string json = "";
+            try { json = File.ReadAllText(jsonSongs + message[2] + "/" + message[1] + ".json"); } catch { }
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+            jsonObj["MLV"] = Convert.ToInt32(message[9]);
+            jsonObj["MNOTES"] = Convert.ToInt32(message[10]);
+            jsonObj["PLV"] = Convert.ToInt32(message[7]);
+            jsonObj["PNOTES"] = Convert.ToInt32(message[8]);
+            jsonObj["RLV"] = Convert.ToInt32(message[5]);
+            jsonObj["RNOTES"] = Convert.ToInt32(message[6]);
+            jsonObj["DLV"] = Convert.ToInt32(message[3]);
+            jsonObj["DNOTES"] = Convert.ToInt32(message[4]);
+            jsonObj["AVA"] = message[11];
+            string output = Newtonsoft.Json.JsonConvert.SerializeObject(jsonObj, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(jsonSongs + message[2] + "/" + message[1] + ".json", output);
+        }
+        public static void ShowSongInfo(string songName, string type, MessageEventArgs e)
+        {
+            string json = File.ReadAllText(jsonSongs + type + "/" + songName + ".json");
+            dynamic jsonObj = Newtonsoft.Json.JsonConvert.DeserializeObject(json);
+
+            string history = songName + "        " + jsonObj["TYPE"];
+            history += "\n\n:regional_indicator_m:  " + GetNumberFullString(Convert.ToInt32(jsonObj["MLV"])) + "  :musical_note:  " + GetNumberFullString(Convert.ToInt32(jsonObj["MNOTES"]));
+            history += "\n\n:regional_indicator_p:  " + GetNumberFullString(Convert.ToInt32(jsonObj["PLV"])) + "  :musical_note:  " + GetNumberFullString(Convert.ToInt32(jsonObj["PNOTES"]));
+            history += "\n\n:regional_indicator_r:  " + GetNumberFullString(Convert.ToInt32(jsonObj["RLV"])) + "  :musical_note:  " + GetNumberFullString(Convert.ToInt32(jsonObj["RNOTES"]));
+            history += "\n\n:regional_indicator_d:  " + GetNumberFullString(Convert.ToInt32(jsonObj["DLV"])) + "  :musical_note:  " + GetNumberFullString(Convert.ToInt32(jsonObj["DNOTES"]));
+            history += "\n\n" + jsonObj["AVA"];
+
+            e.Channel.SendMessage(history);
+        }
+        public static string GetNumberFullString(int num)
+        {
+            string nums = "";
+            int bits = 3;
+            if (num < 100) bits = 2;
+            int DisplayNumber = 0;
+            for (int index = bits - 1; index >= 0; index--)
+            {
+                DisplayNumber = (num % ((int)Math.Pow(10, bits - index))) / ((int)Math.Pow(10, bits - index - 1));
+                nums += GetNumberString(DisplayNumber) + " ";
+            }
+            return nums;
+        }
+        public static string GetNumberString(int num)
+        {
+            string nums = "";
+            switch (num)
+            {
+                case 0:
+                    nums = ":zero:";
+                    break;
+                case 1:
+                    nums = ":one:";
+                    break;
+                case 2:
+                    nums = ":two:";
+                    break;
+                case 3:
+                    nums = ":three:";
+                    break;
+                case 4:
+                    nums = ":four:";
+                    break;
+                case 5:
+                    nums = ":five:";
+                    break;
+                case 6:
+                    nums = ":six:";
+                    break;
+                case 7:
+                    nums = ":seven:";
+                    break;
+                case 8:
+                    nums = ":eight:";
+                    break;
+                case 9:
+                    nums = ":nine:";
+                    break;
+            }
+            return nums;
+        }
     }
 }
