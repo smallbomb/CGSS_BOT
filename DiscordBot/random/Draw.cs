@@ -346,7 +346,7 @@ namespace DiscordBot.random
                     }
                     else
                     {
-                        await e.Channel.SendMessage(e.User.NicknameMention + " SSR機率約為:" + (Math.Round((double)entity.SSR / (double)entity.totaldrawcount, 4) * 100).ToString() + "%" + " 已抽" + entity.totaldrawcount + "張" );
+                        await e.Channel.SendMessage(e.User.NicknameMention + " SSR機率約為:" + (Math.Round((double)entity.SSR / (double)entity.totaldrawcount, 4) * 100).ToString("f2") + "%" + " 已抽" + entity.totaldrawcount + "張" );
                     }
 
                 }

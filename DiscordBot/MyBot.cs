@@ -79,7 +79,8 @@ namespace DiscordBot
                             await eu_channel.SendMessage("みなさん、おやすみなさい" );
                             await nmw_channel.SendMessage("みなさん、おやすみなさい");
                             await lika_channel.SendMessage("みなさん、おやすみなさい");
-                            return;
+                            Console.WriteLine("SUCCESS!");
+                            Environment.Exit(0);
                         }
                             
                     }
@@ -99,8 +100,12 @@ namespace DiscordBot
             Draw.DrawCardCommand();
             Instrucions.SetInstrucions();
             Lots.DrawLotsCommand() ;
-                ;
-                ;
+            DrawRank.DrawCardRankCommand();
+            ;
+            ;
+            ;
+            ;
+
             /*
              * End feature
              */
@@ -147,6 +152,7 @@ namespace DiscordBot
             string help_information = "```";
             help_information += "現在指令有\n";
             help_information += "!draw       : 抽卡\n";
+            help_information += "!drawRank   : 抽卡排行榜\n";
             help_information += "!lots       : 求籤\n";
             help_information += "!Agr_cgid   : 名片功能\n";
             help_information += "!Agr_ask    : 跟8ball一樣\n";
